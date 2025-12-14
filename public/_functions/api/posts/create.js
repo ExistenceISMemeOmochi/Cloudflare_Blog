@@ -10,21 +10,30 @@ export async function onRequest(context) {
     const data = await context.request.json()
 
     // バリデーション
-    if (!data.title || !data.slug || !data.content || !data.date) {
+    if (!data.title || !data.content || !data.date) {
       return new Response(JSON.stringify({ error: '必須項目が不足しています' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       })
     }
 
+    // UUID自動生成（crypto.randomUUID()を使用）
+    const slug = crypto.randomUUID()
+
     // DBに挿入
     await DB.prepare('INSERT INTO posts (slug, title, content, date, tags) VALUES (?, ?, ?, ?, ?)')
-      .bind(data.slug, data.title, data.content, data.date, data.tags || '')
+      .bind(slug, data.title, data.content, data.date, data.tags || '')
       .run()
 
-    return new Response(JSON.stringify({ success: true }), {
-      headers: { 'Content-Type': 'application/json' },
-    })
+    return new Response(
+      JSON.stringify({
+        success: true,
+        slug: slug, // 生成されたスラッグを返す
+      }),
+      {
+        headers: { 'Content-Type': 'application/json' },
+      },
+    )
   } catch (error) {
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,

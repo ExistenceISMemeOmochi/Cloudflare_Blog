@@ -17,17 +17,31 @@
         padding: 10px;
         margin: 10px 0;
         font-size: 16px;
+        box-sizing: border-box;
       }
       button {
         padding: 10px 20px;
         font-size: 16px;
         cursor: pointer;
+        background: #0066ff;
+        color: white;
+        border: none;
+      }
+      button:hover {
+        background: #0052cc;
       }
       .success {
         color: green;
+        margin-top: 20px;
       }
       .error {
         color: red;
+        margin-top: 20px;
+      }
+      label {
+        display: block;
+        font-weight: bold;
+        margin-top: 15px;
       }
     </style>
   </head>
@@ -37,9 +51,6 @@
     <form id="postForm">
       <label>タイトル</label>
       <input type="text" id="title" required />
-
-      <label>スラッグ（URL用）</label>
-      <input type="text" id="slug" placeholder="my-first-post" required />
 
       <label>日付</label>
       <input type="date" id="date" required />
@@ -61,11 +72,13 @@
 
         const data = {
           title: document.getElementById('title').value,
-          slug: document.getElementById('slug').value,
           date: document.getElementById('date').value,
           tags: document.getElementById('tags').value,
           content: document.getElementById('content').value,
         }
+
+        const messageEl = document.getElementById('message')
+        messageEl.innerHTML = '<p>投稿中...</p>'
 
         try {
           const res = await fetch('/api/posts/create', {
@@ -74,15 +87,20 @@
             body: JSON.stringify(data),
           })
 
+          const result = await res.json()
+
           if (res.ok) {
-            document.getElementById('message').innerHTML =
-              '<p class="success">✅ 記事を投稿しました！</p>'
+            messageEl.innerHTML = `
+            <p class="success">✅ 記事を投稿しました！</p>
+            <p>記事URL: <a href="/posts/${result.slug}" target="_blank">/posts/${result.slug}</a></p>
+          `
             document.getElementById('postForm').reset()
+            document.getElementById('date').value = new Date().toISOString().split('T')[0]
           } else {
-            throw new Error('投稿に失敗しました')
+            throw new Error(result.error || '投稿に失敗しました')
           }
         } catch (error) {
-          document.getElementById('message').innerHTML = `<p class="error">❌ ${error.message}</p>`
+          messageEl.innerHTML = `<p class="error">❌ ${error.message}</p>`
         }
       })
 
