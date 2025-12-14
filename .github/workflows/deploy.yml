@@ -47,6 +47,6 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: 'omochi-blog-pages' # 💡 Pagesプロジェクト名（あなたのプロジェクト名に修正してください）
+          projectName: 'cloudflare-blog' # 💡 Pagesプロジェクト名（あなたのプロジェクト名に修正してください）
           directory: 'dist' # 💡 ビルド成果物のディレクトリ
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
