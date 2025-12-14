@@ -4,7 +4,7 @@
 
 <template>
   <header>
-    <h1>OMOCHI Blog powered by Vue & Cloudflare</h1>
+    <h1>おもちブログ</h1>
   </header>
 
   <main>
