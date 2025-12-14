@@ -1,0 +1,52 @@
+name: CI/CD Pipeline (Build & Deploy)
+
+on:
+  push:
+    branches: ['main'] # 💡 mainブランチにプッシュされた時のみ実行
+
+jobs:
+  # 1. ビルドと品質チェック (Linting)
+  build_and_lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: npm install
+      - name: Run ESLint Check
+        run: npm run lint
+      - name: Run Build (npm run build)
+        run: npm run build
+
+      # 💡 Pagesへのデプロイのため、ビルド成果物を次のジョブへ渡す
+      - name: Upload production artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-files
+          path: dist
+
+  # 2. デプロイ (Lintとビルドが成功した場合のみ実行)
+  deploy:
+    runs-on: ubuntu-latest
+    # 💡 このジョブは build_and_lint ジョブが成功した場合にのみ実行される
+    needs: build_and_lint
+
+    steps:
+      - name: Download built artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-files
+          path: dist
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1 # 💡 公式のPagesアクションを使用
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: 'omochi-blog-pages' # 💡 Pagesプロジェクト名（あなたのプロジェクト名に修正してください）
+          directory: 'dist' # 💡 ビルド成果物のディレクトリ
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
