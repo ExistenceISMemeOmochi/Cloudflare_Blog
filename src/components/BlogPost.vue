@@ -1,10 +1,12 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRoute, RouterLink } from 'vue-router'
+import { RouterLink } from 'vue-router'
+import { marked } from 'marked'
 
-const route = useRoute()
-// URLのパラメータからIDを取得 (文字列で取得されるため、数値に変換)
-const postId = ref(parseInt(route.params.id))
+const props = defineProps({
+  id: String,
+})
+const postId = ref(Number(props.id))
 
 const post = ref(null)
 const error = ref(null)
@@ -22,7 +24,12 @@ onMounted(async () => {
     const foundPost = allPosts.find((p) => p.id === postId.value)
 
     if (foundPost) {
-      post.value = foundPost
+      const mdResponse = await fetch(`/posts/${foundPost.file}`)
+      if (!mdResponse.ok) {
+        throw new Error(`Markdown fetch error: ${mdResponse.status}`)
+      }
+      const markdownText = await mdResponse.text()
+      post.value = { ...foundPost, content: marked(markdownText) }
     } else {
       error.value = `記事ID: ${postId.value} の記事は見つかりませんでした。`
     }
@@ -43,7 +50,7 @@ onMounted(async () => {
       <h2>{{ post.title }}</h2>
       <p class="post-meta">公開日: {{ post.date }}</p>
       <div class="post-content">
-        <p>{{ post.content }}</p>
+        <div v-html="post.content"></div>
       </div>
 
       <router-link to="/" class="back-link">← 記事一覧に戻る</router-link>

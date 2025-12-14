@@ -4,13 +4,13 @@
     "slug": "first-blog-post",
     "title": "Cloudflare TunnelでVueアプリを公開しました！",
     "date": "2025-12-14",
-    "content": "これは最初のブログ記事です。Vue.jsとCloudflare Tunnelの組み合わせは非常に強力で、数分で外部に公開できました！"
+    "file": "first-blog-post.md"
   },
   {
     "id": 2,
     "slug": "vue-devtools-review",
     "title": "Vue Devtoolsが強すぎる件について",
     "date": "2025-12-10",
-    "content": "Vue Devtoolsの機能は想像以上に充実しており、データバインディングの確認やリアルタイム編集が可能です。開発効率が劇的に上がりました。"
+    "file": "vue-devtools-review.md"
   }
 ]

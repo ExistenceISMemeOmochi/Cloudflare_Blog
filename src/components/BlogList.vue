@@ -29,7 +29,6 @@ onMounted(async () => {
         </router-link>
 
         <p class="post-date">公開日: {{ post.date }}</p>
-        <p>{{ post.content.substring(0, 80) + '...' }}</p>
 
         <router-link :to="{ name: 'Post', params: { id: post.id } }" class="read-more">
           記事を読む →
