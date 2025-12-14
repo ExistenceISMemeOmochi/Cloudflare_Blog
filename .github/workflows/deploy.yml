@@ -2,10 +2,16 @@ name: CI/CD Pipeline (Build & Deploy)
 
 on:
   push:
-    branches: ['main'] # 💡 mainブランチにプッシュされた時のみ実行
+    branches: ['main'] # mainブランチへのプッシュで実行
+
+# 💡 修正箇所: YAML構造エラーを解消するため、permissionsをトップレベルに移動
+permissions:
+  contents: read
+  deployments: write
+  statuses: write
 
 jobs:
-  # 1. ビルドと品質チェック (Linting)
+  # 1. ビルドと品質チェック (build_and_lint)
   build_and_lint:
     runs-on: ubuntu-latest
     steps:
@@ -18,21 +24,22 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Run ESLint Check
+        # npm run lint が失敗した場合、このジョブ全体が失敗し、デプロイは実行されない
         run: npm run lint
       - name: Run Build (npm run build)
         run: npm run build
 
-      # 💡 Pagesへのデプロイのため、ビルド成果物を次のジョブへ渡す
+      # ビルド成果物 (distフォルダ) を次のデプロイジョブへ渡す
       - name: Upload production artifact
         uses: actions/upload-artifact@v4
         with:
           name: dist-files
           path: dist
 
-  # 2. デプロイ (Lintとビルドが成功した場合のみ実行)
+  # 2. デプロイ (deploy)
   deploy:
     runs-on: ubuntu-latest
-    # 💡 このジョブは build_and_lint ジョブが成功した場合にのみ実行される
+    # 💡 依存関係: build_and_lint ジョブが成功した場合にのみ実行される
     needs: build_and_lint
 
     steps:
@@ -43,10 +50,11 @@ jobs:
           path: dist
 
       - name: Deploy to Cloudflare Pages
-        uses: cloudflare/pages-action@v1 # 💡 公式のPagesアクションを使用
+        uses: cloudflare/pages-action@v1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: 'cloudflare-blog' # 💡 Pagesプロジェクト名（あなたのプロジェクト名に修正してください）
-          directory: 'dist' # 💡 ビルド成果物のディレクトリ
+          # 💡 ここはあなたのPagesプロジェクト名に修正されていることを確認してください
+          projectName: 'omochi-blog-pages'
+          directory: 'dist'
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
