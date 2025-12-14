@@ -4,7 +4,6 @@ on:
   push:
     branches: ['main'] # mainブランチへのプッシュで実行
 
-# 💡 修正箇所: YAML構造エラーを解消するため、permissionsをトップレベルに移動
 permissions:
   contents: read
   deployments: write
@@ -17,19 +16,21 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+
       - name: Install dependencies
         run: npm install
+
       - name: Run ESLint Check
-        # npm run lint が失敗した場合、このジョブ全体が失敗し、デプロイは実行されない
         run: npm run lint
+
       - name: Run Build (npm run build)
         run: npm run build
 
-      # ビルド成果物 (distフォルダ) を次のデプロイジョブへ渡す
       - name: Upload production artifact
         uses: actions/upload-artifact@v4
         with:
@@ -39,7 +40,6 @@ jobs:
   # 2. デプロイ (deploy)
   deploy:
     runs-on: ubuntu-latest
-    # 💡 依存関係: build_and_lint ジョブが成功した場合にのみ実行される
     needs: build_and_lint
 
     steps:
@@ -54,7 +54,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          # 💡 ここはあなたのPagesプロジェクト名に修正されていることを確認してください
           projectName: 'cloudflare-blog'
           directory: 'dist'
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.head_ref || github.ref_name }}
