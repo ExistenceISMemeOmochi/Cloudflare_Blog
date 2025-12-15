@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>記事管理</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 20px;
+      }
+      input,
+      textarea {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        font-size: 16px;
+        box-sizing: border-box;
+      }
+      button {
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        background: #0066ff;
+        color: white;
+        border: none;
+      }
+      button:hover {
+        background: #0052cc;
+      }
+      .success {
+        color: green;
+        margin-top: 20px;
+      }
+      .error {
+        color: red;
+        margin-top: 20px;
+      }
+      label {
+        display: block;
+        font-weight: bold;
+        margin-top: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>📝 記事管理画面</h1>
+
+    <form id="postForm">
+      <label>タイトル</label>
+      <input type="text" id="title" required />
+
+      <label>日付</label>
+      <input type="date" id="date" required />
+
+      <label>本文（Markdown）</label>
+      <textarea id="content" rows="15" required></textarea>
+
+      <button type="submit">投稿</button>
+    </form>
+
+    <div id="message"></div>
+
+    <script>
+      // 常に /api/posts/create を使用（ローカルも本番も同じ）
+      const API_URL = '/api/posts/create'
+
+      document.getElementById('postForm').addEventListener('submit', async (e) => {
+        e.preventDefault()
+
+        const data = {
+          title: document.getElementById('title').value,
+          date: document.getElementById('date').value,
+          content: document.getElementById('content').value,
+        }
+
+        const messageEl = document.getElementById('message')
+        messageEl.innerHTML = '<p>投稿中...</p>'
+
+        try {
+          const res = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+          })
+
+          const result = await res.json()
+
+          if (res.ok) {
+            messageEl.innerHTML = `
+            <p class="success">✅ 記事を投稿しました！</p>
+            <p>記事URL: <a href="/${result.slug}" target="_blank">/${result.slug}</a></p>
+          `
+            document.getElementById('postForm').reset()
+            document.getElementById('date').value = new Date().toISOString().split('T')[0]
+          } else {
+            throw new Error(result.error || '投稿に失敗しました')
+          }
+        } catch (error) {
+          messageEl.innerHTML = `<p class="error">❌ ${error.message}</p>`
+        }
+      })
+
+      // 今日の日付をデフォルトに
+      document.getElementById('date').value = new Date().toISOString().split('T')[0]
+    </script>
+  </body>
+</html>

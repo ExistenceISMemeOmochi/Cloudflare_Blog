@@ -1,0 +1,27 @@
+name: Code Quality Check (Lint)
+
+# 💡 いつこのワークフローを実行するかを設定
+on:
+  push:
+    branches: ['main', 'master'] # main/masterブランチにプッシュされた時
+  pull_request:
+    branches: ['main', 'master'] # プルリクエストが作成された時
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest # 実行環境（Linuxサーバー）
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4 # 💡 GitHubからコードを取得
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # 💡 Node.jsのバージョンを指定 (例: 20)
+
+      - name: Install dependencies
+        run: npm install # 💡 依存パッケージをインストール
+
+      - name: Run ESLint Check
+        run: npm run lint # 💡 package.jsonに設定されたlintスクリプトを実行
