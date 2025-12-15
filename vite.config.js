@@ -5,14 +5,25 @@ import { fileURLToPath, URL } from 'node:url'
 
 export default defineConfig({
   plugins: [vue(), vueDevTools()],
+  
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
-  // 💡 Cloudflare Tunnelからのアクセスを許可する設定
+  
   server: {
+    port: 5173,
     host: '0.0.0.0',
-    allowedHosts: ['blog.omochiisidiot.net'],
+    strictPort: true,
+    allowedHosts: [
+      'dev.omochiisidiot.net',
+      'blog.omochiisidiot.net',
+      'localhost',
+      '127.0.0.1',
+    ],
   },
+  
+  // publicディレクトリの設定（_functionsも含める）
+  publicDir: 'public',
 })
