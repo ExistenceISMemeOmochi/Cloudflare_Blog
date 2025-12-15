@@ -13,23 +13,19 @@ const error = ref(null)
 
 onMounted(async () => {
   try {
-    // 💡 記事データ全体を取得（BlogListと同じパス）
-    const response = await fetch('/posts/posts.json')
+    // D1 APIから全記事を取得
+    const response = await fetch('/api/posts')
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
     const allPosts = await response.json()
 
-    // 💡 IDが一致する記事を検索
+    // IDが一致する記事を検索
     const foundPost = allPosts.find((p) => p.id === postId.value)
 
     if (foundPost) {
-      const mdResponse = await fetch(`/posts/${foundPost.file}`)
-      if (!mdResponse.ok) {
-        throw new Error(`Markdown fetch error: ${mdResponse.status}`)
-      }
-      const markdownText = await mdResponse.text()
-      post.value = { ...foundPost, content: marked(markdownText) }
+      // contentはD1から既にMarkdownで取得されているため、HTMLに変換
+      post.value = { ...foundPost, content: marked(foundPost.content) }
     } else {
       error.value = `記事ID: ${postId.value} の記事は見つかりませんでした。`
     }

@@ -6,8 +6,8 @@ const posts = ref([])
 
 onMounted(async () => {
   try {
-    // 💡 修正後のパスから取得
-    const response = await fetch('/posts/posts.json')
+    // Cloudflare D1 APIから取得
+    const response = await fetch('/api/posts')
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }

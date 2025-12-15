@@ -8,14 +8,15 @@
   },
   "scripts": {
     "dev": "vite",
+    "dev:full": "npm run build && wrangler pages dev dist --d1=DB=blog-database",
     "build": "vite build && xcopy /E /I /Y public\\functions dist\\functions",
     "preview": "vite preview",
-    "dev:admin": "npm run build && wrangler pages dev dist --d1=DB=blog-database",
     "deploy": "npm run build && wrangler pages deploy dist --project-name=cloudflare-blog",
     "lint": "eslint . --fix --cache",
     "format": "prettier --write --experimental-cli src/"
   },
   "dependencies": {
+    "express": "^4.22.1",
     "marked": "^17.0.1",
     "vue": "^3.5.25",
     "vue-router": "^4.6.4"

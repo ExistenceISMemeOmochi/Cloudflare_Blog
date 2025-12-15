@@ -55,9 +55,6 @@
       <label>日付</label>
       <input type="date" id="date" required />
 
-      <label>タグ（カンマ区切り）</label>
-      <input type="text" id="tags" placeholder="Vue,JavaScript" />
-
       <label>本文（Markdown）</label>
       <textarea id="content" rows="15" required></textarea>
 
@@ -67,13 +64,15 @@
     <div id="message"></div>
 
     <script>
+      // 常に /api/posts/create を使用（ローカルも本番も同じ）
+      const API_URL = '/api/posts/create'
+
       document.getElementById('postForm').addEventListener('submit', async (e) => {
         e.preventDefault()
 
         const data = {
           title: document.getElementById('title').value,
           date: document.getElementById('date').value,
-          tags: document.getElementById('tags').value,
           content: document.getElementById('content').value,
         }
 
@@ -81,7 +80,7 @@
         messageEl.innerHTML = '<p>投稿中...</p>'
 
         try {
-          const res = await fetch('/api/posts/create', {
+          const res = await fetch(API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data),
@@ -92,7 +91,7 @@
           if (res.ok) {
             messageEl.innerHTML = `
             <p class="success">✅ 記事を投稿しました！</p>
-            <p>記事URL: <a href="/posts/${result.slug}" target="_blank">/posts/${result.slug}</a></p>
+            <p>記事URL: <a href="/${result.slug}" target="_blank">/${result.slug}</a></p>
           `
             document.getElementById('postForm').reset()
             document.getElementById('date').value = new Date().toISOString().split('T')[0]

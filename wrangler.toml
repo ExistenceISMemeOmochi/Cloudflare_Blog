@@ -1,7 +1,16 @@
 name = "cloudflare-blog"
+type = "javascript"
 compatibility_date = "2025-12-14"
 
+# D1 データベースの設定
 [[d1_databases]]
 binding = "DB"
 database_name = "blog-database"
-database_id = "04adc233-a705-48f1-a229-2d255a66a43d"  # ← 上のコマンドで表示される
+database_id = "04adc233-a705-48f1-a229-2d255a66a43d"
+
+# 環境変数（管理画面用）
+[env.development]
+vars = { ADMIN_PASSWORD = "Morishunpy?" }
+
+[env.production]
+vars = { ADMIN_PASSWORD = "Morishunpy?" }
