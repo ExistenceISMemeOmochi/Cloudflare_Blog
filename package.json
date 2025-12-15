@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "vite",
     "dev:full": "npm run build && wrangler pages dev dist --d1=DB=blog-database",
-    "build": "vite build && xcopy /E /I /Y public\\functions dist\\functions",
+    "build": "vite build",
     "preview": "vite preview",
     "deploy": "npm run build && wrangler pages deploy dist --project-name=cloudflare-blog",
     "lint": "eslint . --fix --cache",
