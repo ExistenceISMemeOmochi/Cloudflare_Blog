@@ -1,5 +1,4 @@
 name = "cloudflare-blog"
-type = "javascript"
 compatibility_date = "2025-12-14"
 
 # D1 データベースの設定

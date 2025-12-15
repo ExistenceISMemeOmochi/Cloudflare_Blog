@@ -34,24 +34,60 @@ export async function onRequest(context) {
     }
   }
 
-  // 個別記事取得API
-  if (url.pathname.startsWith('/api/posts/') && request.method === 'GET') {
+  // 個別記事取得API（ID指定）
+  if (url.pathname.match(/^\/api\/posts\/\d+$/) && request.method === 'GET') {
+    const id = parseInt(url.pathname.split('/').pop())
+    try {
+      const { results } = await env.DB.prepare('SELECT * FROM posts WHERE id = ?').bind(id).all()
+      if (results.length === 0) {
+        return new Response(JSON.stringify({ error: '記事が見つかりません' }), {
+          status: 404,
+          headers: corsHeaders,
+        })
+      }
+      return new Response(JSON.stringify(results[0]), {
+        headers: {
+          'Content-Type': 'application/json',
+          ...corsHeaders,
+        },
+      })
+    } catch (error) {
+      return new Response(JSON.stringify({ error: error.message }), {
+        status: 500,
+        headers: corsHeaders,
+      })
+    }
+  }
+
+  // 個別記事取得API（slug指定）
+  if (
+    url.pathname.startsWith('/api/posts/') &&
+    request.method === 'GET' &&
+    !url.pathname.match(/^\/api\/posts\/\d+$/) &&
+    url.pathname !== '/api/posts/create'
+  ) {
     const slug = url.pathname.split('/').pop()
     try {
       const { results } = await env.DB.prepare('SELECT * FROM posts WHERE slug = ?')
         .bind(slug)
         .all()
       if (results.length === 0) {
-        return new Response(JSON.stringify({ error: '記事が見つかりません' }), { status: 404 })
+        return new Response(JSON.stringify({ error: '記事が見つかりません' }), {
+          status: 404,
+          headers: corsHeaders,
+        })
       }
       return new Response(JSON.stringify(results[0]), {
         headers: {
           'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
+          ...corsHeaders,
         },
       })
     } catch (error) {
-      return new Response(JSON.stringify({ error: error.message }), { status: 500 })
+      return new Response(JSON.stringify({ error: error.message }), {
+        status: 500,
+        headers: corsHeaders,
+      })
     }
   }
 
