@@ -11,7 +11,7 @@ app.use(express.json())
 // 記事を作成・更新するAPI
 app.post('/api/posts/create', async (req, res) => {
   try {
-    const { title, date, tags, content } = req.body
+    const { title, date, content } = req.body
 
     if (!title || !date || !content) {
       return res.status(400).json({ error: 'タイトル、日付、本文は必須です' })

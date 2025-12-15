@@ -20,8 +20,8 @@ export async function onRequest(context) {
         'Content-Type': 'text/markdown; charset=utf-8',
       },
     })
-  } catch (err) {
-    // ← errorをerrに変更（使ってないけど）
+  } catch (error) {
+    console.error('Error:', error)
     return new Response('Error', { status: 500 })
   }
 }
