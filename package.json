@@ -12,5 +12,9 @@
   "dependencies": {
     "@nuxt/content": "^3.9.0",
     "nuxt": "^4.2.2"
+  },
+  "devDependencies": {
+    "eslint": "^9.0.0",
+    "eslint-plugin-vue": "^9.0.0"
   }
 }
